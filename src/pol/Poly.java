@@ -1,29 +1,31 @@
+package pol;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Poly {
-  public boolean boo = false; // 閹碘晛鐫嶉弽鍥х箶
-  public String str; // 鐎涙ê鍋嶆径姘躲�嶅锟�
-  public String simStr; // 閸栨牜鐣濋崥搴ｆ畱婢舵岸銆嶅锟�
-  String[] arr; // 鐎涙ê鍋嶆径姘躲�嶅蹇曟畱濮ｅ繋绔存い锟�
+  public boolean boo = false; //扩展标志
+  public String str; // 存储多项式
+  public String simStr; // 化简后的多项式
+  public String[] arr; // 存储多项式的每一项
   public String result;
   /**
    * set default mock parameter.锛堟柟娉曡鏄庯級
    * @throws Exception if has error(寮傚父璇存槑)
    */
   
-  public boolean set(String str) {
-    // 閺嶇厧绱￠崠褰掑帳閺冭泛鐨㈡径姘躲�嶅蹇撶摠閸屻劏鎹ｉ弶锟�
+  public final boolean set(String str) {
+    // 格式匹配时将多项式存储起来
     if (boo) {
       this.arr = str.split("[+-]");
       for (int i = 0; i < arr.length; i++) {
         arr[i] = arr[i].trim();
         arr[i] = arr[i].replaceAll("\\s", "*");
-        Pattern pat = Pattern.compile(
+        final Pattern pat = Pattern.compile(
             "\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*");
-        Matcher mat = pat.matcher(arr[i]);
+        final Matcher mat = pat.matcher(arr[i]);
         if (!mat.matches()) {
           return false;
         }
@@ -36,7 +38,7 @@ public class Poly {
       this.str = str;
       this.simStr = str;
       if (!this.expression()) {
-        // 閺嶇厧绱℃稉宥呭爱闁板秵妞傛潏鎾冲毉闁挎瑨顕ゆ穱鈩冧紖
+        // 格式不匹配时输出错误信息
         System.out.println("error");
         return false;
       }
@@ -57,18 +59,18 @@ public class Poly {
   * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
   * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
   */
-  //婢跺嫮鎮婄悰銊ㄦ彧瀵骏绱濊ぐ銏″灇閼奉亜鐣炬稊澶嬫殶閹诡喚绮ㄩ弸锟�
+  //处理表达式，形成自定义数据结构
   public boolean expression() {
     Pattern pat;
-    if (!boo) {
-      pat = Pattern.compile("\\w+([*]\\w)*([+]\\w+([*]\\w)*)*");
-    } else {
+    if (boo) {
       pat = Pattern.compile("\\w+([\\^]\\d+)?(([*]\\w+)"
-        + "|([*]\\w+[\\^]\\d+))*([+-]\\w+([\\^]\\d+)?(([*]\\w+)"
-        + "|([*]\\w+[\\^]\\d+))*)*");
+                + "|([*]\\w+[\\^]\\d+))*([+-]\\w+([\\^]\\d+)?(([*]\\w+)"
+                + "|([*]\\w+[\\^]\\d+))*)*");
+    } else {
+      pat = Pattern.compile("\\w+([*]\\w)*([+]\\w+([*]\\w)*)*");
     }
-    Matcher mat = pat.matcher(str);
-    // 鏉╂柨娲栭弰顖氭儊閸栧綊鍘ら弽鍥唶
+    final Matcher mat = pat.matcher(str);
+    // 返回是否匹配标记
     return mat.matches();
   }
 
@@ -87,25 +89,26 @@ public class Poly {
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  //濮瑰倸顕遍弫锟�,var閹稿洤顦挎い鐟扮础娑擃厾娈戦崣姗�鍣�
-  public boolean derivative(String var) {
+  //求导数,var指多项式中的变量
+  public final boolean derivative(String var) {
     if (str.indexOf(var) == -1) {
       System.out.println("error");
       return false;
     }
     for (int i = 0; i < arr.length; i++) {
-      // 缂佺喕顓哥拠銉┿�嶆稉顓犳畱閸欐﹢鍣洪惃鍕嚋閺侊拷
-      int count = countOfCh(arr[i], var);
+      // 统计该项中的变量的个数
+      final int count = countOfCh(arr[i], var);
       switch (count) {
-        case 0: // 鐠囥儵銆嶆稉顓濈瑝閸氼偅婀侀崣姗�鍣洪敍灞剧湴鐎电厧鎮楁稉锟�0
+        case 0: // 该项中不含有变量，求导后为0
           arr[i] = null;
           break;
-        case 1: // 鐠囥儵銆嶆稉顓炲瘶閸氼偂绔存稉顏勫綁闁插骏绱濆Ч鍌氼嚤閸氬骸褰夐柌蹇曟暏1娴狅絾娴�
+        case 1: // 该项中包含一个变量，求导后变量用1代替
           arr[i] = arr[i].replaceAll(var, "1");
           break;
-        default: // 閸栧懎鎯�2娑擃亙浜掓稉濠勬畱閸欐﹢鍣洪敍灞惧Ω缁楊兛绔存稉顏勫綁闁插繐褰夐幑銏″灇count
-          String cstring = Integer.toString(count);
+        default: // 包含2个以上的变量，把第一个变量变换成count
+          final String cstring = Integer.toString(count);
           arr[i] = arr[i].replaceFirst(var, cstring);
+          break;
       }
     }
     return true;
@@ -115,16 +118,16 @@ public class Poly {
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  //缂佺喕顓竚yStr娑撶捒ar閸戣櫣骞囬惃鍕偧閺侊拷
-  public static int countOfCh(String myStr, String var) {
+  //统计myStr中var出现的次数
+  public static final int countOfCh(String myStr, String var) {
     if (myStr == null || myStr.equals("")) {
       return 0;
     }
     int count = 0;
-    // 瑜版挷绗夋潻娑滎攽閹碘晛鐫嶉弮鑸电槨娑擄拷妞ら�涜厬閸氬嫪閲滈崣姗�鍣洪幋鏍ㄦ殶鐎涙ぞ绠ｉ梻瀵告暏*閸掑棗澹�
-    String[] varArr = myStr.split("\\*");
+    // 当不进行扩展时每一项中各个变量或数字之间用*分割
+    final String[] varArr = myStr.split("\\*");
 
-    for (String temp : varArr) {
+    for (final String temp : varArr) {
       if (temp.equals(var)) {
         count++;
       }
@@ -136,7 +139,7 @@ public class Poly {
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  // 閸栨牜鐣濇径姘躲�嶅锟�
+  // 化简多项式
   public String simplify(String[] arr) {
     String myStr;
     for (int i = 0; i < arr.length; i++) {
@@ -146,13 +149,13 @@ public class Poly {
     }
     int sum = 0;
     // System.out.println(Arrays.toString(arr));
-    for (String temp : arr) {
+    for (final String temp : arr) {
       if (isNum(temp)) {
         sum = Integer.valueOf(temp).intValue() + sum;
       }
     }
     myStr = sum == 0 ? "" : String.valueOf(sum);
-    for (String temp : arr) {
+    for (final String temp : arr) {
       if (temp != null && !isNum(temp)) {
         myStr = myStr + "+" + temp;
       }
@@ -167,8 +170,8 @@ public class Poly {
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
   public String extendSim() {
-    ArrayList<Integer> list = new ArrayList<Integer>(); // 鐠佹澘缍嶉幍锟介張澶嬵劀鐠愮喎褰块幍锟介崷銊ф畱娴ｅ秶鐤�
-    int index = str.indexOf("-");
+    final ArrayList<Integer> list = new ArrayList<Integer>(); // 记录所有正负号所在的位置
+    final int index = str.indexOf('-');
     int min = -1;
     int pcount = 0;
     int scount = 0;
@@ -177,8 +180,8 @@ public class Poly {
       pcount++;
     }
     do {
-      int aaa = str.indexOf("+", ++min);
-      int bbb = str.indexOf("-", ++min);
+      final int aaa = str.indexOf('+', ++min);
+      final int bbb = str.indexOf('-', ++min);
       if (aaa == -1 && bbb == -1) {
         break;
       } else if (aaa == -1) {
@@ -219,9 +222,9 @@ public class Poly {
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  // 闁俺绻冩导鐘插弳娑擄拷娑擃亜鍙挎担鎾舵畱閸婄彻ntvalue鐏忓棜銆冩潏鎯х础娑擃厾娈憊ar閺囨寧宕查幋鎰徔娴ｆ挾娈戦崐锟�
-  public void specific(String var, String intvalue) {
-    if (intvalue != null && intvalue != "") {
+  // 通过传入一个具体的值intvalue将表达式中的var替换成具体的值
+  public final void specific(String var, String intvalue) {
+    if (intvalue != null && intvalue.equals("") == false) {
       simStr = simStr.replace(var, intvalue);
     }
     arr = simStr.split("[+-]");
@@ -237,32 +240,33 @@ public class Poly {
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  // 閸栨牜鐣濇径姘躲�嶅蹇曟畱娑擄拷妞ょ櫢绱濇笟瀣洤閿涙艾鐨*a閸欐ü璐焌^2閿涘苯鐨�1*2閸欐ü璐�2
-  public static String simPoly(String myStr) {
-    // 绾喖鐣剧拠銉┿�嶆稉顓炴儓閺堝顦跨亸鎴濆綁闁插繑鍨ㄩ弫鏉跨摟
-    String[] arrlocal = myStr.split("\\*");
+  // 化简多项式的一项，例如：将a*a变为a^2，将1*2变为2
+  public static final String simPoly(String myStr) {
+    final int judge = 1;
+    // 确定该项中含有多少变量或数字
+    final String[] arrlocal = myStr.split("\\*");
     Arrays.sort(arrlocal);
-    int sum = 1; // 鐠囥儵銆嶆稉顓熷閺堝鏆熺�涙娈戞稊妯夹�
+    int sum = 1; // 该项中所有数字的乘积
     String strTemp = arrlocal[0];
     String strReturn = new String();
-    int count = 0; // 鐎涙顑侀崙铏瑰箛閻ㄥ嫭顐奸弫锟�
-    for (String temp : arrlocal) {
-      // 鐠侊紕鐣婚幍锟介張澶嬫殶鐎涙娈戞稊妯夹�
+    int count = 0; // 字符出现的次数
+    for (final String temp : arrlocal) {
+      // 计算所有数字的乘积
       if (isNum(temp)) {
-        int aaa = Integer.valueOf(temp).intValue();
+        final int aaa = Integer.valueOf(temp).intValue();
         if (aaa == 0) {
           return null;
         }
         sum = sum * aaa;
         strTemp = temp;
       } else {
-        // 缂佺喕顓稿В蹇曨潚鐎涙顑侀崙铏瑰箛閻ㄥ嫭顐奸弫锟�
+        // 统计每种字符出现的次数
         if (strTemp.equals(temp)) {
           count++;
         } else {
-          if (count == 1) {
+          if (count == judge) {
             strReturn = strReturn + "*" + strTemp;
-          } else if (count > 1) {
+          } else if (count > judge) {
             strReturn = strReturn + "*" + strTemp 
               + "^" + String.valueOf(count);
           }
@@ -271,15 +275,15 @@ public class Poly {
         }
       }
     }
-    if (count == 1) {
+    if (count == judge) {
       strReturn = strReturn + "*" + strTemp;
-    } else if (count > 1) {
+    } else if (count > judge) {
       strReturn = strReturn + "*" + strTemp + "^" + String.valueOf(count);
     }
     if (strReturn.isEmpty()) {
       return String.valueOf(sum);
     } else {
-      if (sum == 1) {
+      if (sum == judge) {
         return strReturn.substring(1);
       } else {
         return String.valueOf(sum) + strReturn;
@@ -292,22 +296,22 @@ public class Poly {
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
   public static String changeStrFormat(String myStr) {
-    // 鐏忓棜顕氭い鐟板瀻閸撳弶鍨氶崡鏇氶嚋閻ㄥ嫬鐡х粭锔藉灗閼帮拷 var ^ d閻ㄥ嫬鑸板锟�
+    // 将该项分割成单个的字符或者 var ^ d的形式
     myStr = myStr.trim();
     String[] temp = myStr.split("\\*|\\s");
     for (int i = 0; i < temp.length; i++) {
-      int index = temp[i].indexOf("^");
+      final int index = temp[i].indexOf('^');
       if (index != -1) {
-        // 閸戣櫣骞囨禍鍞檃r^d閻ㄥ嫬鑸板锟�
-        String[] astring = temp[i].split("\\^");
-        int numOfVar = Integer.parseInt(astring[1]);
+        // 出现了var^d的形式
+        final String[] astring = temp[i].split("\\^");
+        final int numOfVar = Integer.parseInt(astring[1]);
         temp[i] = astring[0];
         for (int j = 1; j < numOfVar; j++) {
           temp[i] = temp[i] + "*" + astring[0];
         }
       }
     }
-    // 閸氬牆鑻熷妤�鍩屾稉宥呮儓閺堝。閻ㄥ嫰銆�
+    // 合并得到不含有^的项
     myStr = temp[0];
     for (int i = 1; i < temp.length; i++) {
       myStr = myStr + "*" + temp[i];
@@ -319,26 +323,32 @@ public class Poly {
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  // 閸掋倖鏌囨稉锟芥稉顏勭摟缁楋缚瑕嗛弰顖氭儊閸欘垯浜掓潪顒�瀵叉担宥勮礋閺佹澘鐡ч敍宀勫櫚閻€劍顒滈崚娆掋�冩潏鎯х础閻ㄥ嫭鏌熷▔锟�
-  public static boolean isNum(String string) {
+  // 判断一个字符串是否可以转化位为数字，采用正则表达式的方法
+  public static final boolean isNum(String string) {
     if (string == null) {
       return false;
     }
-    Pattern pat = Pattern.compile("[0-9]*");
-    Matcher mat = pat.matcher(string);
-    return mat.matches();
+    char []jud = string.toCharArray();
+    for(int i=0;i<string.length();i++)
+    {
+    	if(jud[i]<96 || jud[i]>105)
+    	{
+    		return false;
+    	}
+    }
+    return true;
   }
 
   /**
    * set default mock parameter.閿涘牊鏌熷▔鏇☆嚛閺勫函绱�
    * @throws Exception if has error(瀵倸鐖剁拠瀛樻)
    */
-  public static int oeder(String order) {
-    // 濮瑰倸顕遍幐鍥︽姢
-    Pattern der = Pattern.compile("!d/d \\w+");
-    // 閸栨牜鐣濋幐鍥︽姢
-    Pattern sim = Pattern.compile("!simplify( \\w+(=\\d+)?)+");
-    // 濮瑰倸顕遍幐鍥︽姢鏉╂柨娲�1閿涘苯瀵茬粻锟介幐鍥︽姢鏉╂柨娲�2閿涘苯鎯侀崚娆掔箲閸ワ拷0
+  public static final int oeder(String order) {
+    // 求导指令
+    final Pattern der = Pattern.compile("!d/d \\w+");
+    // 化简指令
+    final Pattern sim = Pattern.compile("!simplify( \\w+(=\\d+)?)+");
+    // 求导指令返回1，化简指令返回2，否则返回0
     if (der.matcher(order).matches()) {
       return 1;
     } else if (sim.matcher(order).matches()) {
