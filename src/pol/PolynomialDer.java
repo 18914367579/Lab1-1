@@ -20,7 +20,7 @@ public class PolynomialDer {
   public static void main(final String[] args) {
     final Poly myPoly = new Poly();
     final Scanner input = new Scanner(System.in);
-    System.out.println("是否采用扩展？Y－是  N－否");
+    System.out.println("闂備礁鎼�氱兘宕规导鏉戠畾濞撴熬鎷烽柡灞界焸瀹曞爼鍩￠崒娑欘吂闂備礁婀遍。浠嬪疾濞戙垺鍎撶�广儱顦伴弲顒勬煟閹烘垵锟藉潡寮鍜佸悑闁糕剝顭勯敓锟�  N闂備焦瀵х粙鎴犵矓閹绢喖绠氶柨鐕傛嫹");
     String extendOrder = input.nextLine();
     String isequalY = "Y";
     String isequaly = "y";
@@ -40,7 +40,7 @@ public class PolynomialDer {
       final int command = Poly.oeder(instruction);
       final long startTime = System.currentTimeMillis();
       switch (command) {
-        case 1:// 求导
+        case 1:// 婵犳鍠氶幊鎾诲磹閹间緡鏁嬮柨鐕傛嫹
           myPoly.partition();
           if (!myPoly.derivative(instruction.substring(5))) {
             break;
@@ -52,7 +52,7 @@ public class PolynomialDer {
           }
           myPoly.getStr();
           break;
-        case 2:// 求值
+        case 2:// 婵犳鍠氶幊鎾诲磹閹间焦鏅搁柡鍌樺�栫�氾拷
           final String[] var = instruction.split(" ");
           for (int i = 1; i < var.length; i++) {
             if (var[i].indexOf('=') != -1) {
@@ -71,7 +71,7 @@ public class PolynomialDer {
           System.out.println("error");
       }
       final long endTime = System.currentTimeMillis();
-      System.out.println("运行时间" + (endTime - startTime) + "ms");
+      System.out.println("闂佸搫顦弲婊堝礉濮楋拷閵嗕線骞嬮敃锟界猾宥夋煕椤愶絾绀冮柨娑虫嫹" + (endTime - startTime) + "ms");
       System.out.println("continue or give up?(Y/N):");
       final String temp = input.nextLine();
       String isequalN = "N";
